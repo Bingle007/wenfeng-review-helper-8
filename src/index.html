@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>文风点评助手</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; max-width: 800px; margin: auto; background: #f9f9f9; color: #333; }
+    textarea { width: 100%; height: 150px; margin-top: 1rem; padding: 0.5rem; font-size: 1rem; }
+    button { margin: 0.5rem 0.5rem 1rem 0; padding: 0.5rem 1rem; font-size: 1rem; }
+    pre { background: #fff; padding: 1rem; border: 1px solid #ddd; white-space: pre-wrap; word-wrap: break-word; }
+  </style>
+</head>
+<body>
+  <h1>文风点评助手</h1>
+  <label>输入文章链接或内容：</label>
+  <textarea id="inputText" placeholder="在此粘贴文章链接或正文..."></textarea>
+  <br/>
+  <button onclick="extractStyle()">提取文风</button>
+  <button onclick="generateReview()">生成点评</button>
+  <h2>🖋️ 文风风格</h2>
+  <pre id="styleResult">（等待提取）</pre>
+  <h2>📌 点评结果</h2>
+  <pre id="reviewResult">（等待生成）</pre>
+
+  <script>
+    async function extractStyle() {
+      const input = document.getElementById("inputText").value;
+      const res = await fetch("/api/extract-style", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: input }),
+      });
+      const data = await res.json();
+      document.getElementById("styleResult").textContent = data.style || "提取失败，请检查输入";
+    }
+
+    async function generateReview() {
+      const input = document.getElementById("inputText").value;
+      const style = document.getElementById("styleResult").textContent;
+      const res = await fetch("/api/generate-review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: input, style }),
+      });
+      const data = await res.json();
+      document.getElementById("reviewResult").textContent = data.review || "点评失败，请先提取文风或检查输入";
+    }
+  </script>
+</body>
+</html>
