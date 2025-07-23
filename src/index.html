@@ -25,28 +25,17 @@
   <pre id="reviewResult">（等待生成）</pre>
 
   <script>
-    async function extractStyle() {
-      const input = document.getElementById("inputText").value;
-      const res = await fetch("/api/extract-style", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: input }),
-      });
-      const data = await res.json();
-      document.getElementById("styleResult").textContent = data.style || "提取失败，请检查输入";
-    }
-
     async function generateReview() {
-      const input = document.getElementById("inputText").value;
-      const style = document.getElementById("styleResult").textContent;
-      const res = await fetch("/api/generate-review", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: input, style }),
-      });
-      const data = await res.json();
-      document.getElementById("reviewResult").textContent = data.review || "点评失败，请先提取文风或检查输入";
-    }
+  const article = document.getElementById("inputText").value;
+  const stylePrompt = document.getElementById("styleResult").textContent;
+  const res = await fetch("/api/generate-review-handler", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ article, stylePrompt }),
+  });
+  const data = await res.json();
+  document.getElementById("reviewResult").textContent = data.result || "点评失败，请先提取文风或检查输入";
+}
   </script>
 </body>
 </html>
