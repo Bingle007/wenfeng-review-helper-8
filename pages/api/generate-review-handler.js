@@ -1,5 +1,8 @@
 export default async function handler(req, res) {
   const { article, stylePrompt } = req.body;
+  if (!article || !stylePrompt) {
+    return res.status(400).json({ error: '文章和文风提示不能为空' });
+  }
 
   const prompt = `请模仿以下文风，对一篇文章生成“见、感、思、行”四段点评，每段不超过100字：
 风格提示：${stylePrompt}
@@ -24,10 +27,14 @@ export default async function handler(req, res) {
       body: JSON.stringify(payload)
     });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      return res.status(response.status).json({ error: errorData.error || '点评生成失败' });
+    }
+
     const data = await response.json();
     res.status(200).json({ result: data.choices[0].message.content });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "调用失败" });
   }
 }
